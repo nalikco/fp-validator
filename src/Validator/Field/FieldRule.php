@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Framework\Validator\Field;
 
-use Framework\Validator\Rules\AbstractRule;
+use Framework\Validator\AbstractRule;
 
 final class FieldRule
 {

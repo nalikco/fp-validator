@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Framework\Validator\Field;
 
-use Framework\Validator\Rules\AbstractRule;
+use Framework\Validator\AbstractRule;
 use Framework\Validator\Rules\IsNotEmpty;
 use Framework\Validator\Rules\IsString;
 use Framework\Validator\Rules\IsUrl;

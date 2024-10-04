@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Framework\Validator\Rules;
 
+use Framework\Validator\AbstractRule;
 use Framework\Validator\Validation\RuleValidateResult;
 
 final class IsNotEmpty extends AbstractRule

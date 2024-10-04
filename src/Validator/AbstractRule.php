@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Framework\Validator\Rules;
+namespace Framework\Validator;
 
 use Framework\Validator\Validation\RuleValidateResult;
 
