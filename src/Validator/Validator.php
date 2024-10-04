@@ -18,8 +18,9 @@ final class Validator
         $errors = new ValidationErrors();
 
         $fields->each(function (Field $field) use ($data, $errors): void {
-            $field->getRules()->each(function (FieldRule $fieldRule) use ($data, $errors, $field): void {
-                $value = ArrayKeyResolver::resolve($field->getKey(), $data);
+            $value = ArrayKeyResolver::resolve($field->getKey(), $data);
+
+            $field->getRules()->each(function (FieldRule $fieldRule) use ($value, $errors, $field): void {
                 $result = $fieldRule->getRule()->validate($value);
 
                 if ($result->isNotPassed()) {
