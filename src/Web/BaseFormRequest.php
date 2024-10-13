@@ -36,7 +36,11 @@ abstract class BaseFormRequest
             return;
         }
 
-        $validatorFields = $fields->map(function (Field $field) {
+        $fieldsWithValidators = $fields->filter(function (Field $field) {
+            return !is_null($field->toValidatorField());
+        });
+
+        $validatorFields = $fieldsWithValidators->map(function (Field $field) {
             return $field->toValidatorField();
         });
 

@@ -13,7 +13,7 @@ final class ValidatorField
 
     public function __construct(
         string $fieldName,
-        ?ValueValidator $valueValidator = null
+        ValueValidator $valueValidator
     ) {
         $this->fieldName = $fieldName;
         $this->valueValidator = $valueValidator;
@@ -30,7 +30,7 @@ final class ValidatorField
     /**
      * Returns a value validator with rules.
      */
-    public function getValueValidator(): ?ValueValidator
+    public function getValueValidator(): ValueValidator
     {
         return $this->valueValidator;
     }

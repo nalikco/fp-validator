@@ -22,15 +22,12 @@ final class Validator
 
         $fields->each(function (ValidatorField $field) use ($data, $errors): void {
             $value = ArrayResolver::from($data, $field->getFieldName());
-            $valueValidator = $field->getValueValidator();
 
-            if (!is_null($valueValidator)) {
-                $fieldErrors = $valueValidator->validate($value);
+            $fieldErrors = $field->getValueValidator()->validate($value);
 
-                $errors->merge($fieldErrors->map(function (ValueValidatorError $error) use ($field): ValidatorError {
-                    return new ValidatorError($field->getFieldName(), $error->getRule());
-                }));
-            }
+            $errors->merge($fieldErrors->map(function (ValueValidatorError $error) use ($field): ValidatorError {
+                return new ValidatorError($field->getFieldName(), $error->getRule());
+            }));
         });
 
         return $errors;

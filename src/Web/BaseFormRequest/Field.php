@@ -23,8 +23,12 @@ class Field
         $this->valueValidator = $valueValidator;
     }
 
-    public function toValidatorField(): ValidatorField
+    public function toValidatorField(): ?ValidatorField
     {
+        if (is_null($this->getValueValidator())) {
+            return null;
+        }
+
         return new ValidatorField($this->getFieldName(), $this->getValueValidator());
     }
 
