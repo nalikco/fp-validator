@@ -3,7 +3,7 @@
 namespace Framework\Collection;
 
 use ArgumentCountError;
-use Generator;
+use Framework\Helper\ArrayResolver;
 use InvalidArgumentException;
 
 /**
@@ -74,17 +74,14 @@ class Collection
      * Execute a callback over each item.
      *
      * @param callable $callback
-     * @return self
      */
-    final public function each(callable $callback): self
+    final public function each(callable $callback): void
     {
         foreach ($this->items as $key => $item) {
             if ($callback($item, $key) === false) {
                 break;
             }
         }
-
-        return $this;
     }
 
     /**
@@ -113,6 +110,109 @@ class Collection
     }
 
     /**
+     * Sort the collection using the given callback.
+     *
+     * @param (callable(Value, Key): mixed) $callback
+     * @param int $options
+     * @param bool $descending
+     * @return static<Key, Value>
+     */
+    final public function sort(callable $callback, int $options = SORT_REGULAR, bool $descending = false)
+    {
+        $instance = clone $this;
+
+        $results = [];
+
+        foreach ($instance->items as $key => $value) {
+            $results[$key] = $callback($value, $key);
+        }
+
+        $descending ? arsort($results, $options)
+            : asort($results, $options);
+
+        foreach (array_keys($results) as $key) {
+            $results[$key] = $instance->items[$key];
+        }
+
+        $instance->items = $results;
+
+        return $instance;
+    }
+
+    /**
+     * Filter the array using the given callback.
+     *
+     * @param callable $callback
+     * @return static<Key, Value>
+     */
+    public function filter(callable $callback)
+    {
+        $instance = clone $this;
+        $instance->items = array_filter($this->items, $callback, ARRAY_FILTER_USE_BOTH);
+
+        return $instance;
+    }
+
+    /**
+     * Adds an item to a collection
+     *
+     * @param Value $item
+     */
+    public function add($item): void
+    {
+        $this->items[] = $item;
+    }
+
+    /**
+     * Adds an items to a collection
+     *
+     * @param Value[] $items
+     */
+    public function merge(array $items)
+    {
+        $this->items = array_merge($this->items, $items);
+    }
+
+    /**
+     * Returns first item of collection
+     *
+     * @return ?Value
+     */
+    final public function first()
+    {
+        return current($this->items) ?? null;
+    }
+
+    /**
+     * Returns the key value of an element.
+     *
+     * If items is objects example: key is 'id' = $item->getId()
+     *
+     * If items is arrays example: key is 'user.id' = $item['user']['id']
+     */
+    final public function column(string $key): Collection
+    {
+        $items = $this->map(function ($item) use ($key) {
+            if (is_array($item)) {
+                return ArrayResolver::from($item, $key);
+            } elseif (is_object($item)) {
+                $getterMethodName = 'get' . lcfirst($key);
+
+                if (method_exists($item, $getterMethodName)) {
+                    return $item->{$getterMethodName}();
+                }
+            }
+
+            return null;
+        });
+
+        $instance = new self();
+        $instance->items = array_values($items);
+
+        return $instance;
+    }
+
+    /**
      * Run a map over each of the items in the array.
      *
      * @param callable $callback
@@ -129,28 +229,5 @@ class Collection
         }
 
         return array_combine($keys, $items);
-    }
-
-    /**
-     * Adds an item to a collection
-     *
-     * @param Value $item
-     * @return self
-     */
-    public function add($item): self
-    {
-        $this->items[] = $item;
-
-        return $this;
-    }
-
-    /**
-     * @return Generator
-     */
-    final public function getList(): Generator
-    {
-        foreach ($this->items as $item) {
-            yield $item;
-        }
     }
 }

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Validator\Rules;
 
-use Framework\Validator\Rules\IsNotEmpty;
+use Framework\Validator\Rule\Collection\IsRequired;
 use PHPUnit\Framework\TestCase;
 
-final class IsNotEmptyTest extends TestCase
+final class IsRequiredTest extends TestCase
 {
     public function testPassed(): void
     {
-        $rule = new IsNotEmpty();
+        $rule = new IsRequired();
 
         $values = [
             'not_empty',
@@ -29,7 +29,7 @@ final class IsNotEmptyTest extends TestCase
 
     public function testNotPassed(): void
     {
-        $rule = new IsNotEmpty();
+        $rule = new IsRequired();
 
         $values = [
             '',

@@ -4,30 +4,33 @@ declare(strict_types=1);
 
 namespace Framework\Validator;
 
-use Framework\Arr\ArrayKeyResolver;
-use Framework\Validator\Error\ValidationError;
-use Framework\Validator\Error\ValidationErrors;
-use Framework\Validator\Field\Field;
-use Framework\Validator\Field\FieldRule;
-use Framework\Validator\Field\Fields;
+use Framework\Helper\ArrayResolver;
+use Framework\Validator\Error\ValidatorError;
+use Framework\Validator\Error\ValidatorErrors;
+use Framework\Validator\Field\ValidatorField;
+use Framework\Validator\Field\ValidatorFields;
+use Framework\Validator\ValueValidator\ValueValidatorError;
 
 final class Validator
 {
-    public static function validate(Fields $fields, array $data): ValidationErrors
+    /**
+     * Validates an array according to the given rules
+     */
+    public static function validate(ValidatorFields $fields, array $data): ValidatorErrors
     {
-        $errors = new ValidationErrors();
+        $errors = new ValidatorErrors();
 
-        $fields->each(function (Field $field) use ($data, $errors): void {
-            $value = ArrayKeyResolver::resolve($field->getKey(), $data);
+        $fields->each(function (ValidatorField $field) use ($data, $errors): void {
+            $value = ArrayResolver::from($data, $field->getFieldName());
+            $valueValidator = $field->getValueValidator();
 
-            $field->getRules()->each(function (FieldRule $fieldRule) use ($value, $errors, $field): void {
-                $result = $fieldRule->getRule()->validate($value);
+            if (!is_null($valueValidator)) {
+                $fieldErrors = $valueValidator->validate($value);
 
-                if ($result->isNotPassed()) {
-                    $error = new ValidationError($fieldRule->getMessage(), $field);
-                    $errors->add($error);
-                }
-            });
+                $errors->merge($fieldErrors->map(function (ValueValidatorError $error) use ($field): ValidatorError {
+                    return new ValidatorError($field->getFieldName(), $error->getRule());
+                }));
+            }
         });
 
         return $errors;

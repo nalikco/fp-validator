@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Validator\Rules;
 
-use Framework\Validator\Rules\IsUrl;
+use Framework\Validator\Rule\Collection\IsUrl;
 use PHPUnit\Framework\TestCase;
 
 final class IsUrlTest extends TestCase

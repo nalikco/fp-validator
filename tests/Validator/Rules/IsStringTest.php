@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Validator\Rules;
 
-use Framework\Validator\Rules\IsString;
+use Framework\Validator\Rule\Collection\IsString;
 use PHPUnit\Framework\TestCase;
 
 final class IsStringTest extends TestCase
